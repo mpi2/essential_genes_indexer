@@ -52,7 +52,6 @@ def main(argv):
         table='idg',
         properties=properties,
         # properties='driver=org.postgresql.Driver',
-        # url='jdbc:postgresql://localhost:6082/batchdata?user=batch_admin&password=batch_admin',
 
         numPartitions=5,
         column="id",
