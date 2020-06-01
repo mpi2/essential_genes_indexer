@@ -20,13 +20,9 @@ def main(argv):
     """
     Batch Query Indexer
     :param list argv: the list elements should be:
-                    [1]: jdbc connection string (dbname=batchdata, port=6082)
-
-                    [1]: database host (localhost)
-                    [2]: database name (batchdata)
-                    [3]: database port (6082)
-                    [4]: database username (batch_admin)
-                    [5]: database password (batch_admin)
+                    [1]: jdbc connection string
+                    [2]: database username
+                    [3]: database password
     """
     jdbc_connection_str = argv[1]
     db_user = argv[2]
