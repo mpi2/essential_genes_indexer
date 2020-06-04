@@ -28,51 +28,42 @@ def main(argv):
     """
     spark = initialise(argv)
 
-    df_o = get_ortholog_test(spark)
-    df_o.show()
+    df_ortholog = get_ortholog(spark)
+    df_ortholog.show()
 
-    df_f, df_iav, df_iev, df_mg, df_mgs, df_mgsr = get_mouse_test(spark)
-    df_mg.show()
-    df_iav.show()
-    df_iev.show()
-    df_f.show()
-    df_mgsr.show()
-    df_mgs.show()
-
-
-def get_mouse(spark):
-    df_f = read_jdbc(spark, 'fusil', 'f_')
-    df_iav = read_jdbc(spark, 'impc_adult_viability', 'iav_')
-    df_iev = read_jdbc(spark, 'impc_embryo_viability', 'iev_')
-    df_mg = read_jdbc(spark, 'mouse_gene', 'mg_')
-    df_mgs = read_jdbc(spark, 'mouse_gene_synonym', 'mgs_')
-    df_mgsr = read_jdbc(spark, 'mouse_gene_synonym_relation', 'mgsr_')
-    return df_f, df_iav, df_iev, df_mg, df_mgs, df_mgsr
-
-
-def get_mouse_test(spark):
-    df_f = read_jdbc(spark, 'fusil', 'f_', num_partitions=4, column='id', lower_bound=1, upper_bound=20)
-    df_iav = read_jdbc(spark, 'impc_adult_viability', 'iav_', num_partitions=4, column='id', lower_bound=1,
-                       upper_bound=20)
-    df_iev = read_jdbc(spark, 'impc_embryo_viability', 'iev_', num_partitions=4, column='id', lower_bound=1,
-                       upper_bound=20)
-    df_mg = read_jdbc(spark, 'mouse_gene', 'mg_', num_partitions=4, column='id', lower_bound=1, upper_bound=20)
-    df_mgs = read_jdbc(spark, 'mouse_gene_synonym', 'mgs_', num_partitions=4, column='id', lower_bound=1,
-                       upper_bound=20)
-    df_mgsr = read_jdbc(spark, 'mouse_gene_synonym_relation', 'mgsr_', num_partitions=4, column='mouse_gene_id',
-                        lower_bound=1, upper_bound=20)
-    return df_f, df_iav, df_iev, df_mg, df_mgs, df_mgsr
+    df_mouse = get_mouse(spark)
+    df_mouse.show()
 
 
 def get_ortholog(spark):
-    df_o = read_jdbc(spark, 'ortholog', 'o_')
-    return df_o
+    get_table(spark, "ortholog", "o_")
+    return spark.sql("SELECT * FROM ortholog")
 
 
-def get_ortholog_test(spark):
-    df_o = read_jdbc(spark, 'ortholog', 'o_', num_partitions=4, column='human_gene_id', lower_bound=1, upper_bound=20)
+def get_mouse(spark):
+    fusil = get_table(spark, "fusil", "f_")
+    impc_adult_viability = get_table(spark, 'impc_adult_viability', 'iav_')
+    impc_embryo_viability = get_table(spark, 'impc_embryo_viability', 'iev_')
+    mouse_gene = get_table(spark, 'mouse_gene', 'mg_')
+    mouse_gene_synonym = get_table(spark, 'mouse_gene_synonym', 'mgs_')
+    mouse_gene_synonym_relation = get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_')
 
-    return df_o
+    q = '''\
+        SELECT mg.*, f.*, mgs.*, iav.*, iev.* FROM mouse_gene mg\
+        LEFT OUTER JOIN impc_adult_viability iav ON iav.iav_mouse_gene_id = mg.mg_id\
+        LEFT OUTER JOIN impc_embryo_viability iev ON iev.iev_mouse_gene_id = mg.mg_id\
+        LEFT OUTER JOIN fusil f ON f.f_mouse_gene_id = mg.mg_id\
+        LEFT OUTER JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_id = mg.mg_id\
+        LEFT OUTER JOIN mouse_gene_synonym mgs ON mgs.mgs_id = mgsr.mgsr_mouse_gene_synonym_id
+    '''
+
+    return spark.sql(q)
+
+
+def get_table(spark, table_name, correlation_name):
+    df = read_jdbc(spark, table_name, correlation_name)
+    df = df.createOrReplaceTempView(table_name)
+    return df
 
 
 def initialise(argv):
@@ -98,10 +89,6 @@ def read_jdbc(spark, table, correlation_name, num_partitions=None, column=None, 
         jdbc_connection_str,
         table=table,
         properties=properties,
-        numPartitions=num_partitions,
-        column=column,
-        lowerBound=lower_bound,
-        upperBound=upper_bound,
     )
     df = remap_column_names(df, correlation_name)
     return df
