@@ -34,10 +34,24 @@ def main(argv):
     df_mouse = get_mouse(spark)
     df_mouse.show()
 
+    df_ortholog_mouse = get_ortholog_mouse(spark, df_ortholog, df_mouse)
+    df_ortholog_mouse.show()
+
 
 def get_ortholog(spark):
     get_table(spark, "ortholog", "o_")
     return spark.sql("SELECT * FROM ortholog")
+
+
+def get_ortholog_mouse(spark, df_ortholog, df_mouse):
+    get_table(spark, "ortholog", "o_")
+    df_mouse.createOrReplaceTempView("mouse")
+
+    q = '''
+    SELECT o.*, m.* FROM ortholog o 
+    LEFT OUTER JOIN mouse m ON m.mg_id = o.o_mouse_gene_id
+    '''
+    return spark.sql(q)
 
 
 def get_mouse(spark):
