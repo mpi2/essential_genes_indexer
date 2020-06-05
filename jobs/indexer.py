@@ -1,8 +1,8 @@
 import sys
 import os
+import pysolr
 from pyspark.sql import SparkSession
 import findspark
-
 findspark.init(os.environ.get('SPARK_HOME'))
 
 # Spark JDBC to other databases:
@@ -84,7 +84,6 @@ def get_mouse(spark):
         LEFT OUTER JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_id = mg.mg_id\
         LEFT OUTER JOIN mouse_gene_synonym mgs ON mgs.mgs_id = mgsr.mgsr_mouse_gene_synonym_id
     '''
-
     return spark.sql(q)
 
 
@@ -108,7 +107,6 @@ def get_human(spark):
         LEFT OUTER JOIN human_gene_synonym_relation AS hgsr ON hgsr.hgsr_human_gene_id = hg.  hg_id\
         LEFT OUTER JOIN human_gene_synonym          AS hgs  ON hgs. hgs_id             = hgsr.hgsr_human_gene_synonym_id
     '''
-
     return spark.sql(q)
 
 
