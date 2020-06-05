@@ -1,16 +1,12 @@
 import sys
-
+import os
+from pyspark.sql import SparkSession
 import findspark
 
-findspark.init('/Users/mrelac/servers/pyspark/')
+findspark.init(os.environ.get('SPARK_HOME'))
 
-from pyspark.sql import SparkSession
-
-# From https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html:
-# To get started you will need to include the JDBC driver for your particular
-# database on the spark classpath. For example, to connect to postgres from
-# the Spark Shell you would run the following command:
-# bin/spark-shell --driver-class-path postgresql-9.4.1207.jar --jars postgresql-9.4.1207.jar
+# Spark JDBC to other databases:
+#   https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html
 
 postgres_jdbc_jar = ''
 properties = ''
@@ -28,14 +24,13 @@ def main(argv):
     """
     spark = initialise(argv)
 
-    df_ortholog = get_ortholog(spark)
-    df_ortholog.show()
-
+    get_ortholog(spark)
     df_mouse = get_mouse(spark)
-    df_mouse.show()
-
-    df_ortholog_mouse = get_ortholog_mouse(spark, df_ortholog, df_mouse)
-    df_ortholog_mouse.show()
+    get_ortholog_mouse(spark, df_mouse)
+    df_human = get_human(spark)
+    get_ortholog_human(spark, df_human)
+    df_ortholog_mouse_and_human = get_ortholog_mouse_and_human(spark)
+    df_ortholog_mouse_and_human.show()
 
 
 def get_ortholog(spark):
@@ -43,8 +38,7 @@ def get_ortholog(spark):
     return spark.sql("SELECT * FROM ortholog")
 
 
-def get_ortholog_mouse(spark, df_ortholog, df_mouse):
-    get_table(spark, "ortholog", "o_")
+def get_ortholog_mouse(spark, df_mouse):
     df_mouse.createOrReplaceTempView("mouse")
 
     q = '''
@@ -54,21 +48,65 @@ def get_ortholog_mouse(spark, df_ortholog, df_mouse):
     return spark.sql(q)
 
 
+def get_ortholog_human(spark, df_mouse):
+    df_mouse.createOrReplaceTempView("human")
+
+    q = '''
+    SELECT o.*, h.* FROM ortholog o 
+    LEFT OUTER JOIN human h ON h.hg_id = o.o_human_gene_id
+    '''
+    return spark.sql(q)
+
+
+def get_ortholog_mouse_and_human(spark):
+    q = '''
+    SELECT o.*, m.*, h.* FROM ortholog o
+    LEFT OUTER JOIN mouse m ON m.mg_id = o.o_mouse_gene_id
+    LEFT OUTER JOIN human h ON h.hg_id = o.o_human_gene_id
+    '''
+    return spark.sql(q)
+
+
 def get_mouse(spark):
-    fusil = get_table(spark, "fusil", "f_")
-    impc_adult_viability = get_table(spark, 'impc_adult_viability', 'iav_')
-    impc_embryo_viability = get_table(spark, 'impc_embryo_viability', 'iev_')
-    mouse_gene = get_table(spark, 'mouse_gene', 'mg_')
-    mouse_gene_synonym = get_table(spark, 'mouse_gene_synonym', 'mgs_')
-    mouse_gene_synonym_relation = get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_')
+    get_table(spark, "fusil", "f_")
+    get_table(spark, 'impc_adult_viability', 'iav_')
+    get_table(spark, 'impc_embryo_viability', 'iev_')
+    get_table(spark, 'mouse_gene', 'mg_')
+    get_table(spark, 'mouse_gene_synonym', 'mgs_')
+    get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_')
 
     q = '''\
-        SELECT mg.*, f.*, mgs.*, iav.*, iev.* FROM mouse_gene mg\
+        SELECT mg.*, f.*, mgs.*, iav.*, iev.*\
+        FROM mouse_gene mg\
         LEFT OUTER JOIN impc_adult_viability iav ON iav.iav_mouse_gene_id = mg.mg_id\
         LEFT OUTER JOIN impc_embryo_viability iev ON iev.iev_mouse_gene_id = mg.mg_id\
         LEFT OUTER JOIN fusil f ON f.f_mouse_gene_id = mg.mg_id\
         LEFT OUTER JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_id = mg.mg_id\
         LEFT OUTER JOIN mouse_gene_synonym mgs ON mgs.mgs_id = mgsr.mgsr_mouse_gene_synonym_id
+    '''
+
+    return spark.sql(q)
+
+
+def get_human(spark):
+    get_table(spark, "achilles_gene_effect", "age_")
+    get_table(spark, 'clingen', 'clin_')
+    get_table(spark, 'gnomad_plof', 'gnp_')
+    get_table(spark, 'hgnc_gene', 'hgnc_')
+    get_table(spark, 'human_gene', 'hg_')
+    get_table(spark, 'human_gene_synonym', 'hgs_')
+    get_table(spark, 'human_gene_synonym_relation', 'hgsr_')
+    get_table(spark, 'idg', 'idg')
+
+    q = '''\
+        SELECT age.*, clin.*, gnp.*, hgnc.*, hg.*, hgs.*\
+        FROM human_gene hg\
+        LEFT OUTER JOIN achilles_gene_effect        AS age  ON age. age_human_gene_id  = hg.  hg_id\
+        LEFT OUTER JOIN clingen                     AS clin ON clin.clin_human_gene_id = hg.  hg_id\
+        LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp. gnp_human_gene_id  = hg.  hg_id\
+        LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.hgnc_human_gene_id = hg.  hg_id\
+        LEFT OUTER JOIN human_gene_synonym_relation AS hgsr ON hgsr.hgsr_human_gene_id = hg.  hg_id\
+        LEFT OUTER JOIN human_gene_synonym          AS hgs  ON hgs. hgs_id             = hgsr.hgsr_human_gene_synonym_id
     '''
 
     return spark.sql(q)
