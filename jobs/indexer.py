@@ -1,9 +1,21 @@
 import sys
 import os
-import pysolr
-from pyspark.sql import SparkSession
+
 import findspark
 findspark.init(os.environ.get('SPARK_HOME'))
+from pyspark.sql import SparkSession
+
+# To get pyspark to run in Intellij:
+# File -> Project Structure -> Platform Settings -> Modules
+#   1. Middle panel: Django should be just under the app name
+#   2. Right panel:
+#      A. Specify Module SDK (e.g. Python 3.7.7)
+#      B. Click the '+' to add 'Jars or directories...'
+#      C. Navigate to python directory within your spark installation
+#        (e.g. /Users/mrelac/servers/pyspark/python)
+#          -> Choose 'OPEN'
+#      D. 'Choose Categories of Selected Files'
+#          -> choose 'Classes'
 
 # Spark JDBC to other databases:
 #   https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html
@@ -24,13 +36,20 @@ def main(argv):
     """
     spark = initialise(argv)
 
+    df_ortholog_mouse_and_human = get_batch_data(spark)
+    df_ortholog_mouse_and_human.limit(100).write.csv('/tmp/batchdatacsv', 'overwrite', header=True)
+    df_ortholog_mouse_and_human.limit(100).write.parquet('/tmp/batchdatadf', 'overwrite')
+# curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" -d @batchdata.csv
+
+
+def get_batch_data(spark):
     get_ortholog(spark)
     df_mouse = get_mouse(spark)
     get_ortholog_mouse(spark, df_mouse)
     df_human = get_human(spark)
     get_ortholog_human(spark, df_human)
     df_ortholog_mouse_and_human = get_ortholog_mouse_and_human(spark)
-    df_ortholog_mouse_and_human.show()
+    return df_ortholog_mouse_and_human
 
 
 def get_ortholog(spark):
