@@ -4,6 +4,8 @@ import os
 import findspark
 findspark.init(os.environ.get('SPARK_HOME'))
 from pyspark.sql import SparkSession
+limit = 100
+# limit = None
 
 # To get pyspark to run in Intellij:
 # File -> Project Structure -> Platform Settings -> Modules
@@ -23,6 +25,7 @@ from pyspark.sql import SparkSession
 postgres_jdbc_jar = ''
 properties = ''
 jdbc_connection_str = ''
+output_dir = '/tmp/batchdata_output'
 
 
 def main(argv):
@@ -33,14 +36,16 @@ def main(argv):
                     [2]: database username
                     [3]: database password
                     [4]: postgres jar location
+                    [5]: fully-qualified csv output directory path
     """
     spark = initialise(argv)
 
     df_ortholog_mouse_and_human = get_batch_data(spark)
-    df_ortholog_mouse_and_human.limit(100).write.csv('/tmp/batchdatacsv', 'overwrite', header=True)
-    df_ortholog_mouse_and_human.limit(100).write.parquet('/tmp/batchdatadf', 'overwrite')
-# curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" -d @batchdata.csv
 
+    df_ortholog_mouse_and_human.limit(limit).write.csv(output_dir, 'overwrite', header=True)
+    # df_ortholog_mouse_and_human.limit(limit).write.parquet(output_dir, 'overwrite')
+
+#   curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" --data-binary @batchdata.csv
 
 def get_batch_data(spark):
     get_ortholog(spark)
@@ -148,6 +153,9 @@ def initialise(argv):
         "password": db_password,
         "driver": "org.postgresql.Driver",
     }
+    if len(argv) > 5:
+        global parquet_output_dir
+        parquet_output_dir = argv[5]
 
     spark = get_spark_session()
     return spark
