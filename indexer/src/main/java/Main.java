@@ -44,15 +44,25 @@ public class Main {
     }
 
     public void index() {
+        take(10);
+    }
+
+    public void take(int rowCount) {
         Dataset<Row> data = spark.read().csv(inputPath);
-        List<Row>    rows  = data.takeAsList(5);
-        for (Row row : rows) {
-            for (int i = 0; i < row.length(); i++) {
-                Object o = row.get(i);
-                System.out.print((o == null ? "<null>" : o.toString()) + ", ");
+        List<Row>    rows  = data.takeAsList(rowCount);
+        Row heading = null;
+        for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
+            Row row = rows.get(rowIndex);
+            if (rowIndex == 0) {
+                heading = row;
+            } else {
+                for (int colIndex = 0; colIndex < row.length(); colIndex++) {
+                    Object o = row.get(colIndex);
+                    System.out.println("[" + rowIndex + "][" + colIndex + "]: " + heading.get(colIndex) + ": " + (o == null ? "<null>" : o.toString()) + ", ");
+                }
+                System.out.println();
+                System.out.println();
             }
-            System.out.println();
-            System.out.println();
         }
         System.out.println();
     }
