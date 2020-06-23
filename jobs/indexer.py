@@ -36,15 +36,15 @@ def main(argv):
                     [2]: database username
                     [3]: database password
                     [4]: postgres jar location
-                    [5]: fully-qualified csv output directory path
+                    [5]: fully-qualified output directory path
     """
     spark = initialise(argv)
 
     df_ortholog_mouse_and_human = get_batch_data(spark)
 
-    df_ortholog_mouse_and_human.limit(limit).write.csv(output_dir, 'overwrite', header=True)
-    # df_ortholog_mouse_and_human.limit(limit).write.parquet(output_dir, 'overwrite')
+    df_ortholog_mouse_and_human.limit(limit).write.parquet(output_dir, 'overwrite')
 
+    df_ortholog_mouse_and_human.limit(limit).write.csv(output_dir + ".csv", 'overwrite', header=True)
 #   curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" --data-binary @batchdata.csv
 
 def get_batch_data(spark):
@@ -154,8 +154,9 @@ def initialise(argv):
         "driver": "org.postgresql.Driver",
     }
     if len(argv) > 5:
-        global parquet_output_dir
-        parquet_output_dir = argv[5]
+        global output_dir
+        output_dir = argv[5]
+        print('Output directory: ', output_dir)
 
     spark = get_spark_session()
     return spark

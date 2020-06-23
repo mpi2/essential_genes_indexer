@@ -13,6 +13,7 @@
  * language governing permissions and limitations under the
  * License.
  ******************************************************************************/
+
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -20,9 +21,9 @@ import org.apache.spark.sql.SparkSession;
 import java.util.List;
 
 /**
- *     Batch Query Indexer
- *     The list elements should be:
- *       [1]: fully-qualified csv input directory path
+ * Batch Query Indexer
+ * The list elements should be:
+ * [1]: fully-qualified csv input directory path
  */
 public class Main {
     String       inputPath;
@@ -48,21 +49,17 @@ public class Main {
     }
 
     public void take(int rowCount) {
-        Dataset<Row> data = spark.read().csv(inputPath);
-        List<Row>    rows  = data.takeAsList(rowCount);
-        Row heading = null;
+        Dataset<Row> data    = spark.read().parquet(inputPath);
+        List<Row>    rows    = data.takeAsList(rowCount);
+        String[]     heading = data.columns();
         for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++) {
             Row row = rows.get(rowIndex);
-            if (rowIndex == 0) {
-                heading = row;
-            } else {
-                for (int colIndex = 0; colIndex < row.length(); colIndex++) {
-                    Object o = row.get(colIndex);
-                    System.out.println("[" + rowIndex + "][" + colIndex + "]: " + heading.get(colIndex) + ": " + (o == null ? "<null>" : o.toString()) + ", ");
-                }
-                System.out.println();
-                System.out.println();
+            for (int colIndex = 0; colIndex < row.length(); colIndex++) {
+                Object o = row.get(colIndex);
+                System.out.println("[" + rowIndex + "][" + colIndex + "]: " + heading[colIndex] + ": " + (o == null ? "<null>" : o.toString()) + ", ");
             }
+            System.out.println();
+            System.out.println();
         }
         System.out.println();
     }
