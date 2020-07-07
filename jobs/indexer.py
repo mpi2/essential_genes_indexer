@@ -27,6 +27,25 @@ properties = ''
 jdbc_connection_str = ''
 output_dir = '/tmp/batchdata_output'
 
+# Doesn't work. Can't find 'solr' module. Possibly mismatched
+# spark/solr connector. VERY fiddly.
+# def write_df(spark, df_path):
+#     df = spark.read.load(df_path)
+#     df.write.format('solr')\
+#         .option('zkhost','localhost:9984')\
+#         .option('collection', 'batchquery')\
+#         .mode('overwrite')\
+#         .save()
+#     print('done')
+
+# Sample run configuration to run on ves-ebi-d9 from localhost laptop:
+#
+# [1]: jdbc connection string                   jdbc:postgresql://ves-ebi-d9.ebi.ac.uk:5433/wwwwww
+# [2]: database username                        xxxxxx
+# [3]: database password                        yyyyyy
+# [4]: postgres jar location                    /Users/zzzzzz/Downloads/postgresql-42.2.12.jar
+# [5]: fully-qualified output directory path    /Users/zzzzzz/batch/parquet2
+
 
 def main(argv):
     """
