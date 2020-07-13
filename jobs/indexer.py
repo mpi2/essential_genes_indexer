@@ -1,10 +1,6 @@
 import sys
 import os
 
-import findspark
-findspark.init(os.environ.get('SPARK_HOME'))
-from pyspark.sql import SparkSession
-
 # To get pyspark to run in Intellij:
 # File -> Project Structure -> Platform Settings -> Modules
 #   1. Middle panel: Django should be just under the app name
@@ -86,7 +82,7 @@ def get_batch_data(spark):
 
 
 def get_ortholog(spark):
-    get_table(spark, "ortholog", "o_")
+    get_table(spark, "ortholog", "o_", "id")
     return spark.sql("SELECT * FROM ortholog")
 
 
@@ -120,12 +116,12 @@ def get_ortholog_mouse_and_human(spark):
 
 
 def get_mouse(spark):
-    get_table(spark, "fusil", "f_")
-    get_table(spark, 'impc_adult_viability', 'iav_')
-    get_table(spark, 'impc_embryo_viability', 'iev_')
-    get_table(spark, 'mouse_gene', 'mg_')
-    get_table(spark, 'mouse_gene_synonym', 'mgs_')
-    get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_')
+    get_table(spark, "fusil", "f_", "id")
+    get_table(spark, 'impc_adult_viability', 'iav_', 'id')
+    get_table(spark, 'impc_embryo_viability', 'iev_', 'id')
+    get_table(spark, 'mouse_gene', 'mg_', 'id')
+    get_table(spark, 'mouse_gene_synonym', 'mgs_', 'id')
+    get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_', 'mouse_gene_id')
 
     q = '''\
         SELECT mg.*, f.*, mgs.*, iav.*, iev.*\
@@ -140,14 +136,14 @@ def get_mouse(spark):
 
 
 def get_human(spark):
-    get_table(spark, "achilles_gene_effect", "age_")
-    get_table(spark, 'clingen', 'clin_')
-    get_table(spark, 'gnomad_plof', 'gnp_')
-    get_table(spark, 'hgnc_gene', 'hgnc_')
-    get_table(spark, 'human_gene', 'hg_')
-    get_table(spark, 'human_gene_synonym', 'hgs_')
-    get_table(spark, 'human_gene_synonym_relation', 'hgsr_')
-    get_table(spark, 'idg', 'idg')
+    get_table(spark, "achilles_gene_effect", "age_", 'id')
+    get_table(spark, 'clingen', 'clin_', 'id')
+    get_table(spark, 'gnomad_plof', 'gnp_', 'id')
+    get_table(spark, 'hgnc_gene', 'hgnc_', 'id')
+    get_table(spark, 'human_gene', 'hg_', 'id')
+    get_table(spark, 'human_gene_synonym', 'hgs_', 'id')
+    get_table(spark, 'human_gene_synonym_relation', 'hgsr_', 'human_gene_id')
+    get_table(spark, 'idg', 'idg', 'id')
 
     q = '''\
         SELECT age.*, clin.*, gnp.*, hgnc.*, hg.*, hgs.*\
@@ -162,8 +158,12 @@ def get_human(spark):
     return spark.sql(q)
 
 
-def get_table(spark, table_name, correlation_name):
-    df = read_jdbc(spark, table_name, correlation_name)
+def get_table(spark, table_name, correlation_name, partition_column):
+    if local:
+        df = read_jdbc(spark, table_name, correlation_name)
+    else:
+        df = read_jdbc(spark, table_name, correlation_name, num_partitions=5000, column=partition_column, lower_bound=0,
+                       upper_bound=999999)
     df = df.createOrReplaceTempView(table_name)
     return df
 
@@ -202,6 +202,10 @@ def read_jdbc(spark, table, correlation_name, num_partitions=None, column=None, 
         jdbc_connection_str,
         table=table,
         properties=properties,
+        numPartitions=num_partitions,
+        column=column,
+        lowerBound=lower_bound,
+        upperBound=upper_bound,
     )
     df = remap_column_names(df, correlation_name)
     return df
@@ -215,12 +219,16 @@ def remap_column_names(df, correlation_name):
 
 def get_spark_session():
     if local:
+        import findspark
+        findspark.init(os.environ.get('SPARK_HOME'))
+        from pyspark.sql import SparkSession
         spark = SparkSession \
             .builder \
             .config("spark.jars", postgres_jdbc_jar) \
             .master("local[*]") \
             .getOrCreate()
     else:
+        from pyspark.sql import SparkSession
         spark = SparkSession \
             .builder \
             .getOrCreate()
