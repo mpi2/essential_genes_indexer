@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# This script builds the batch query parquet files on the hadoop cluster.
+#
+# command-line arguments:
+#        args[1] - jdbc connection string
+#        args[2] - database username
+#        args[3] - database password
+#        args[4] - output directory path
+
+if [[ $# -lt 4 ]]; then
+  echo "Usage: $0 jdbc_connection_string, username, password, output_path"
+  exit 1
+fi
+
+export YARN_CONF_DIR=~/spark-2.4.5-bin-hadoop2.7/yarn-conf-hh/
+
+~/spark-2.4.5-bin-hadoop2.7/bin/spark-submit \
+ --driver-memory=32g \
+ --master=yarn \
+ --conf=spark.yarn.maxAppAttempts=2 \
+ --conf=spark.executor.memoryOverhead=5 \
+ --packages org.postgresql:postgresql:42.2.12 \
+ --conf=spark.blacklist.enabled=true \
+ --conf=spark.executorEnv.PYSPARK_PYTHON=python36 \
+ --conf=spark.yarn.appMasterEnv.PYSPARK_PYTHON=python36 \
+ --conf=spark.yarn.appMasterEnv.PYSPARK_DRIVER_PYTHON=python36 \
+ --conf=spark.sql.session.timeZone=UTC \
+ --deploy-mode=cluster \
+ --executor-memory=32G \
+ --num-executors=17 \
+ --executor-cores=5 \
+ ~/indexer.py $1 $2 $3 $4

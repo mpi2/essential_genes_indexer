@@ -37,13 +37,13 @@ limit = -1
 # Sample run configuration to run on ves-ebi-d9 from localhost laptop:
 #
 #
-# [1]: jdbc connection string                   (only needed for local) jdbc:postgresql://ves-ebi-d9.ebi.ac.uk:5433/wwwwww
-# [2]: database username                        xxxxxx
-# [3]: database password                        yyyyyy (ignored when running on cluster)
-# [4]: fully-qualified output directory path    /Users/zzzzzz/batch/parquet2
-# [5]: local                                    (only needed for local) if running local, any non-blank value
-# [6]: limit                                    (-1 = no limit)
-# [7]: postgres jar location                    (only needed for local) /Users/zzzzzz/Downloads/postgresql-42.2.12.jar
+# [1]: jdbc connection string        jdbc:postgresql://hostname:portnum/dbname
+# [2]: database username             xxxxxx
+# [3]: database password             yyyyyy (ignored when running on cluster)
+# [4]: output directory path         parquet
+# [5]: local                         (only needed for local) if running local, any non-blank value
+# [6]: limit                         (-1 = no limit)
+# [7]: postgres jar location         (only needed for local) /Users/zzzzzz/Downloads/postgresql-42.2.12.jar
 
 
 def main(args):
@@ -53,9 +53,9 @@ def main(args):
         args[1] - jdbc connection string
         args[2] - database username
         args[3] - database password
-        args[4] - fully-qualified output directory path
+        args[4] - output directory path
         args[5] - local - set to any value if running local. Omit if running on the cluster
-        args[6] - limit
+        args[6] - limit (ignored if running on hadoop. May be omitted.)
         args[7] - postgres jar location
 
     """
