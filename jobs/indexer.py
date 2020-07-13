@@ -4,8 +4,6 @@ import os
 import findspark
 findspark.init(os.environ.get('SPARK_HOME'))
 from pyspark.sql import SparkSession
-limit = 100
-# limit = None
 
 # To get pyspark to run in Intellij:
 # File -> Project Structure -> Platform Settings -> Modules
@@ -26,6 +24,8 @@ postgres_jdbc_jar = ''
 properties = ''
 jdbc_connection_str = ''
 output_dir = '/tmp/batchdata_output'
+local = False
+limit = -1
 
 # Doesn't work. Can't find 'solr' module. Possibly mismatched
 # spark/solr connector. VERY fiddly.
@@ -40,30 +40,39 @@ output_dir = '/tmp/batchdata_output'
 
 # Sample run configuration to run on ves-ebi-d9 from localhost laptop:
 #
-# [1]: jdbc connection string                   jdbc:postgresql://ves-ebi-d9.ebi.ac.uk:5433/wwwwww
+#
+# [1]: jdbc connection string                   (only needed for local) jdbc:postgresql://ves-ebi-d9.ebi.ac.uk:5433/wwwwww
 # [2]: database username                        xxxxxx
-# [3]: database password                        yyyyyy
-# [4]: postgres jar location                    /Users/zzzzzz/Downloads/postgresql-42.2.12.jar
-# [5]: fully-qualified output directory path    /Users/zzzzzz/batch/parquet2
+# [3]: database password                        yyyyyy (ignored when running on cluster)
+# [4]: fully-qualified output directory path    /Users/zzzzzz/batch/parquet2
+# [5]: local                                    (only needed for local) if running local, any non-blank value
+# [6]: limit                                    (-1 = no limit)
+# [7]: postgres jar location                    (only needed for local) /Users/zzzzzz/Downloads/postgresql-42.2.12.jar
 
 
-def main(argv):
+def main(args):
     """
     Batch Query Indexer
-    :param list argv: the list elements should be:
-                    [1]: jdbc connection string
-                    [2]: database username
-                    [3]: database password
-                    [4]: postgres jar location
-                    [5]: fully-qualified output directory path
+    :param args:
+        args[1] - jdbc connection string
+        args[2] - database username
+        args[3] - database password
+        args[4] - fully-qualified output directory path
+        args[5] - local - set to any value if running local. Omit if running on the cluster
+        args[6] - limit
+        args[7] - postgres jar location
+
     """
-    spark = initialise(argv)
-
+    spark = initialise(args)
     df_ortholog_mouse_and_human = get_batch_data(spark)
+    if limit >= 0:
+        print('Using limit ', limit)
+        df_ortholog_mouse_and_human.limit(limit).write.parquet(output_dir, 'overwrite')
+        df_ortholog_mouse_and_human.limit(limit).write.csv(output_dir + ".csv", 'overwrite', header=True)
+    else:
+        print('No limit')
+        df_ortholog_mouse_and_human.write.parquet(output_dir, 'overwrite')
 
-    df_ortholog_mouse_and_human.limit(limit).write.parquet(output_dir, 'overwrite')
-
-    df_ortholog_mouse_and_human.limit(limit).write.csv(output_dir + ".csv", 'overwrite', header=True)
 #   curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" --data-binary @batchdata.csv
 
 def get_batch_data(spark):
@@ -164,18 +173,25 @@ def initialise(argv):
     jdbc_connection_str = argv[1]
     db_user = argv[2]
     db_password = argv[3]
-    global postgres_jdbc_jar
-    postgres_jdbc_jar = argv[4]
+    global output_dir
+    output_dir = argv[4]
+    print('Output directory: ', output_dir)
+    if len(argv) > 5:
+        global local
+        local = True
+    if len(argv) > 6:
+        global limit
+        limit = int(argv[6])
+    if len(argv) > 7:
+        global postgres_jdbc_jar
+        postgres_jdbc_jar = argv[7]
+
     global properties
     properties = {
         "user": db_user,
         "password": db_password,
         "driver": "org.postgresql.Driver",
     }
-    if len(argv) > 5:
-        global output_dir
-        output_dir = argv[5]
-        print('Output directory: ', output_dir)
 
     spark = get_spark_session()
     return spark
@@ -198,11 +214,16 @@ def remap_column_names(df, correlation_name):
 
 
 def get_spark_session():
-    spark = SparkSession \
-        .builder \
-        .config("spark.jars", postgres_jdbc_jar) \
-        .master("local[*]") \
-        .getOrCreate()
+    if local:
+        spark = SparkSession \
+            .builder \
+            .config("spark.jars", postgres_jdbc_jar) \
+            .master("local[*]") \
+            .getOrCreate()
+    else:
+        spark = SparkSession \
+            .builder \
+            .getOrCreate()
     return spark
 
 
