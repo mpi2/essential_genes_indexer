@@ -19,7 +19,8 @@ import os
 postgres_jdbc_jar = ''
 properties = ''
 jdbc_connection_str = ''
-output_dir = '/tmp/batchdata_output'
+essentialgenes_dir = 'essentialgenes'
+orthology_dir = 'orthology'
 local = False
 limit = -1
 
@@ -53,21 +54,22 @@ def main(args):
         args[1] - jdbc connection string
         args[2] - database username
         args[3] - database password
-        args[4] - output directory path
+        args[4] - output directory path (optional)
         args[5] - local - set to any value if running local. Omit if running on the cluster
         args[6] - limit (ignored if running on hadoop. May be omitted.)
         args[7] - postgres jar location
 
     """
     spark = initialise(args)
-    df_ortholog_mouse_and_human = get_batch_data(spark)
+    df_ortholog_mouse_and_human, df_ortholog_mouse_mapping_and_human_mapping = get_batch_data(spark)
     if limit >= 0:
         print('Using limit ', limit)
-        df_ortholog_mouse_and_human.limit(limit).write.parquet(output_dir, 'overwrite')
-        df_ortholog_mouse_and_human.limit(limit).write.csv(output_dir + ".csv", 'overwrite', header=True)
+        df_ortholog_mouse_and_human.limit(limit).write.parquet(essentialgenes_dir, 'overwrite')
+        df_ortholog_mouse_mapping_and_human_mapping.limit(limit).write.parquet(orthology_dir, 'overwrite')
     else:
         print('No limit')
-        df_ortholog_mouse_and_human.write.parquet(output_dir, 'overwrite')
+        df_ortholog_mouse_and_human.write.parquet(essentialgenes_dir, 'overwrite')
+        df_ortholog_mouse_mapping_and_human_mapping.write.parquet(orthology_dir + '_mapping', 'overwrite')
 
 #   curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" --data-binary @batchdata.csv
 
@@ -78,7 +80,13 @@ def get_batch_data(spark):
     df_human = get_human(spark)
     get_ortholog_human(spark, df_human)
     df_ortholog_mouse_and_human = get_ortholog_mouse_and_human(spark)
-    return df_ortholog_mouse_and_human
+
+    df_mouse_mapping = get_mouse_mapping(spark)
+    get_ortholog_mouse_mapping(spark, df_mouse_mapping)
+    df_human_mapping = get_human_mapping(spark)
+    get_ortholog_human_mapping(spark, df_human_mapping)
+    df_ortholog_mouse_mapping_and_human_mapping = get_ortholog_mouse_mapping_and_human_mapping(spark)
+    return df_ortholog_mouse_and_human, df_ortholog_mouse_mapping_and_human_mapping
 
 
 def get_ortholog(spark):
@@ -96,8 +104,8 @@ def get_ortholog_mouse(spark, df_mouse):
     return spark.sql(q)
 
 
-def get_ortholog_human(spark, df_mouse):
-    df_mouse.createOrReplaceTempView("human")
+def get_ortholog_human(spark, df_human):
+    df_human.createOrReplaceTempView("human")
 
     q = '''
     SELECT o.*, h.* FROM ortholog o 
@@ -158,6 +166,64 @@ def get_human(spark):
     return spark.sql(q)
 
 
+################
+# mapping tables
+################
+
+
+def get_mouse_mapping(spark):
+    get_table(spark, 'mouse_gene', 'mg_', 'id')
+    get_table(spark, 'mouse_mapping_filter', 'mmf_', 'id')
+
+    q = '''\
+        SELECT mg.*, mmf.*\
+        FROM mouse_gene mg\
+        LEFT OUTER JOIN mouse_mapping_filter mmf ON mmf.mmf_mouse_gene_id = mg.mg_id
+    '''
+    return spark.sql(q)
+
+
+def get_human_mapping(spark):
+    get_table(spark, 'human_gene', 'hg_', 'id')
+    get_table(spark, 'human_mapping_filter', 'hmf_', 'id')
+
+    q = '''\
+        SELECT hg.*, hmf.*\
+        FROM human_gene hg\
+        LEFT OUTER JOIN human_mapping_filter hmf ON hmf.hmf_human_gene_id = hg.hg_id
+    '''
+    return spark.sql(q)
+
+
+def get_ortholog_mouse_mapping(spark, df_mouse_mapping):
+    df_mouse_mapping.createOrReplaceTempView("mouse_mapping")
+
+    q = '''
+    SELECT o.*, mm.* FROM ortholog o 
+    LEFT OUTER JOIN mouse_mapping mm ON mm.mg_id = o.o_mouse_gene_id
+    '''
+    return spark.sql(q)
+
+
+def get_ortholog_human_mapping(spark, df_human_mapping):
+    df_human_mapping.createOrReplaceTempView("human_mapping")
+
+    q = '''
+    SELECT o.*, hm.* FROM ortholog o 
+    LEFT OUTER JOIN human_mapping hm ON hm.hg_id = o.o_human_gene_id
+    '''
+    return spark.sql(q)
+
+
+def get_ortholog_mouse_mapping_and_human_mapping(spark):
+    q = '''
+    SELECT o.*, mmf.*, hmf.* FROM ortholog o
+    LEFT OUTER JOIN mouse_mapping_filter mmf ON mmf.mmf_id = o.o_mouse_gene_id
+    LEFT OUTER JOIN human_mapping_filter hmf ON hmf.hmf_id = o.o_human_gene_id
+    '''
+    return spark.sql(q)
+
+
 def get_table(spark, table_name, correlation_name, partition_column):
     if local:
         df = read_jdbc(spark, table_name, correlation_name)
@@ -170,20 +236,23 @@ def get_table(spark, table_name, correlation_name, partition_column):
 
 def initialise(argv):
     global jdbc_connection_str
+    global essentialgenes_dir
+    global orthology_dir
+    global local
+    global limit
+    global postgres_jdbc_jar
+
     jdbc_connection_str = argv[1]
     db_user = argv[2]
     db_password = argv[3]
-    global output_dir
-    output_dir = argv[4]
-    print('Output directory: ', output_dir)
+    if len(argv) > 4 and len(argv[4]) > 0:
+        essentialgenes_dir = os.path.join(argv[4], essentialgenes_dir)
+        orthology_dir = os.path.join(argv[4], orthology_dir)
     if len(argv) > 5:
-        global local
         local = True
     if len(argv) > 6:
-        global limit
         limit = int(argv[6])
     if len(argv) > 7:
-        global postgres_jdbc_jar
         postgres_jdbc_jar = argv[7]
 
     global properties
@@ -192,6 +261,11 @@ def initialise(argv):
         "password": db_password,
         "driver": "org.postgresql.Driver",
     }
+
+    print('jdbc_connection_str:', jdbc_connection_str)
+    print('essentialgenes directory: ', essentialgenes_dir)
+    print('orthology directory: ', orthology_dir)
+    print('local: ', local)
 
     spark = get_spark_session()
     return spark
