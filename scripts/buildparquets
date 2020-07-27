@@ -16,11 +16,11 @@ if [[ $# -lt 4 ]]; then
 fi
 
 ~/spark-2.4.5-bin-hadoop2.7/bin/spark-submit \
+ --driver-class-path=jars/postgresql*.jar \
  --driver-memory=32g \
  --master=yarn \
  --conf=spark.yarn.maxAppAttempts=2 \
  --conf=spark.executor.memoryOverhead=5 \
- --packages org.postgresql:postgresql:42.2.12 \
  --conf=spark.blacklist.enabled=true \
  --conf=spark.executorEnv.PYSPARK_PYTHON=python36 \
  --conf=spark.yarn.appMasterEnv.PYSPARK_PYTHON=python36 \

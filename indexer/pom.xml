@@ -23,6 +23,14 @@
             <version>2.4.5</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+        <!-- NOTE:If you change the postgresql version below, you MUST also change it in scripts/buildparquets -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.14</version>
+        </dependency>
+
     </dependencies>
 
 </project>
