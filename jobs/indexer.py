@@ -248,7 +248,7 @@ def initialise(argv):
     if len(argv) > 4 and len(argv[4]) > 0:
         essentialgenes_dir = os.path.join(argv[4], essentialgenes_dir)
         orthology_dir = os.path.join(argv[4], orthology_dir)
-    if len(argv) > 5:
+    if len(argv) > 5 and argv[5].lower() == "true":
         local = True
     if len(argv) > 6:
         limit = int(argv[6])

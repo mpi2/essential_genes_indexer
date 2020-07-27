@@ -8,12 +8,12 @@
 #        args[3] - database password
 #        args[4] - output directory path
 
+export YARN_CONF_DIR=~/spark-2.4.5-bin-hadoop2.7/yarn-conf-hh/
+
 if [[ $# -lt 4 ]]; then
   echo "Usage: $0 jdbc_connection_string, username, password, output_path"
   exit 1
 fi
-
-export YARN_CONF_DIR=~/spark-2.4.5-bin-hadoop2.7/yarn-conf-hh/
 
 ~/spark-2.4.5-bin-hadoop2.7/bin/spark-submit \
  --driver-memory=32g \
