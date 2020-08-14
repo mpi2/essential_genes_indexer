@@ -20,7 +20,7 @@ postgres_jdbc_jar = ''
 properties = ''
 jdbc_connection_str = ''
 essentialgenes_dir = 'essentialgenes'
-orthology_dir = 'orthology'
+ortholog_dir = 'ortholog_mapping'
 local = False
 limit = -1
 
@@ -65,11 +65,11 @@ def main(args):
     if limit >= 0:
         print('Using limit ', limit)
         df_ortholog_mouse_and_human.limit(limit).write.parquet(essentialgenes_dir, 'overwrite')
-        df_ortholog_mouse_mapping_and_human_mapping.limit(limit).write.parquet(orthology_dir, 'overwrite')
+        df_ortholog_mouse_mapping_and_human_mapping.limit(limit).write.parquet(ortholog_dir, 'overwrite')
     else:
         print('No limit')
         df_ortholog_mouse_and_human.write.parquet(essentialgenes_dir, 'overwrite')
-        df_ortholog_mouse_mapping_and_human_mapping.write.parquet(orthology_dir + '_mapping', 'overwrite')
+        df_ortholog_mouse_mapping_and_human_mapping.write.parquet(ortholog_dir + '_mapping', 'overwrite')
 
 #   curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" --data-binary @batchdata.csv
 
@@ -239,7 +239,7 @@ def get_table(spark, table_name, correlation_name, partition_column):
 def initialise(argv):
     global jdbc_connection_str
     global essentialgenes_dir
-    global orthology_dir
+    global ortholog_dir
     global local
     global limit
     global postgres_jdbc_jar
@@ -249,7 +249,7 @@ def initialise(argv):
     db_password = argv[3]
     if len(argv) > 4 and len(argv[4]) > 0:
         essentialgenes_dir = os.path.join(argv[4], essentialgenes_dir)
-        orthology_dir = os.path.join(argv[4], orthology_dir)
+        ortholog_dir = os.path.join(argv[4], ortholog_dir)
     if len(argv) > 5 and argv[5].lower() == "true":
         local = True
     if len(argv) > 6:
@@ -266,7 +266,7 @@ def initialise(argv):
 
     print('jdbc_connection_str:', jdbc_connection_str)
     print('essentialgenes directory: ', essentialgenes_dir)
-    print('orthology directory: ', orthology_dir)
+    print('ortholog directory: ', ortholog_dir)
     print('local: ', local)
 
     spark = get_spark_session()
