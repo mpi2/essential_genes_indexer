@@ -151,17 +151,19 @@ def get_human(spark):
     get_table(spark, 'human_gene', 'hg_', 'id')
     get_table(spark, 'human_gene_synonym', 'hgs_', 'id')
     get_table(spark, 'human_gene_synonym_relation', 'hgsr_', 'human_gene_id')
-    get_table(spark, 'idg', 'idg', 'id')
+    get_table(spark, 'idg', 'idg_', 'id')
 
     q = '''\
-        SELECT age.*, clin.*, gnp.*, hgnc.*, hg.*, hgs.*\
+        SELECT age.*, clin.*, gnp.*, hgnc.*, hg.*, hgs.*, idg.*\
         FROM human_gene hg\
         LEFT OUTER JOIN achilles_gene_effect        AS age  ON age. age_human_gene_id  = hg.  hg_id\
         LEFT OUTER JOIN clingen                     AS clin ON clin.clin_human_gene_id = hg.  hg_id\
         LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp. gnp_human_gene_id  = hg.  hg_id\
         LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.hgnc_human_gene_id = hg.  hg_id\
         LEFT OUTER JOIN human_gene_synonym_relation AS hgsr ON hgsr.hgsr_human_gene_id = hg.  hg_id\
-        LEFT OUTER JOIN human_gene_synonym          AS hgs  ON hgs. hgs_id             = hgsr.hgsr_human_gene_synonym_id
+        LEFT OUTER JOIN human_gene_synonym          AS hgs  ON hgs. hgs_id             = hgsr.hgsr_human_gene_synonym_id\
+        LEFT OUTER JOIN idg                                 ON idg. idg_id             = hg.  hg_id
+        
     '''
     return spark.sql(q)
 
