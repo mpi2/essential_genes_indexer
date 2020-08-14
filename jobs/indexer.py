@@ -69,7 +69,7 @@ def main(args):
     else:
         print('No limit')
         df_ortholog_mouse_and_human.write.parquet(essentialgenes_dir, 'overwrite')
-        df_ortholog_mouse_mapping_and_human_mapping.write.parquet(ortholog_dir + '_mapping', 'overwrite')
+        df_ortholog_mouse_mapping_and_human_mapping.write.parquet(ortholog_dir, 'overwrite')
 
 #   curl "http://localhost:8983/solr/gettingstarted/update?commit=true" -H "Content-type:application/csv" --data-binary @batchdata.csv
 
