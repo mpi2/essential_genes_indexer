@@ -152,20 +152,20 @@
         ]
       },
       "table_info": [
-        {
-          "alias": "o"
-        },
-        {
-          "name": "ortholog"
-        },
-        {
-          "alias": "mmf"
-        },
-        {
-          "name": "mouse_mapping_filter"
-        },
-        {
-          "alias": "hmf"
-        },
-        }
+          {
+            "alias": "o"
+          },
+          {
+            "name": "ortholog"
+          },
+          {
+            "alias": "mmf"
+          },
+          {
+            "name": "mouse_mapping_filter"
+          },
+          {
+            "alias": "hmf"
+          },
+        ]
       }
