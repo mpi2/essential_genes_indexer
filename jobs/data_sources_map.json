@@ -1,171 +1,171 @@
 {
-  "cores": [
-    {
-      "essentialgenes": {
-        "mouse_gene": {
-          "identifier": "id",
-          "prefix": "mg",
-          "public_identifier": "mgi_gene_acc_id",
-          "datasources": [
-            {
-              "table_name": "mouse_gene",
-              "identifier": "id",
-              "prefix": "mg"
-            },
-            {
-              "table_name": "impc_adult_viability",
-              "identifier": "mouse_gene_id",
-              "prefix": "iav"
-            },
-            {
-              "table_name": "impc_embryo_viability",
-              "identifier": "mouse_gene_id",
-              "prefix": "iev"
-            },
-            {
-              "table_name": "fusil",
-              "identifier": "mouse_gene_id",
-              "prefix": "f"
-            },
-            {
-              "table_name": "mouse_gene_synonym",
-              "identifier": "mgi_gene_acc_id",
-              "prefix": "mgs"
+    "cores": [
+        {
+            "essentialgenes": {
+                "mouse_gene": {
+                    "identifier": "id",
+                    "prefix": "mg",
+                    "public_identifier": "mgi_gene_acc_id",
+                    "datasources": [
+                        {
+                            "table_name": "mouse_gene",
+                            "identifier": "id",
+                            "prefix": "mg"
+                        },
+                        {
+                            "table_name": "impc_adult_viability",
+                            "identifier": "mouse_gene_id",
+                            "prefix": "iav"
+                        },
+                        {
+                            "table_name": "impc_embryo_viability",
+                            "identifier": "mouse_gene_id",
+                            "prefix": "iev"
+                        },
+                        {
+                            "table_name": "fusil",
+                            "identifier": "mouse_gene_id",
+                            "prefix": "f"
+                        },
+                        {
+                            "table_name": "mouse_gene_synonym",
+                            "identifier": "mgi_gene_acc_id",
+                            "prefix": "mgs"
+                        }
+                    ]
+                },
+                "human_gene": {
+                    "identifier": "id",
+                    "prefix": "hg",
+                    "public_identifier": "hgnc_acc_id",
+                    "datasources": [
+                        {
+                            "table_name": "human_gene",
+                            "identifier": "id",
+                            "prefix": "hg"
+                        },
+                        {
+                            "table_name": "achilles_gene_effect",
+                            "identifier": "human_gene_id",
+                            "prefix": "age"
+                        },
+                        {
+                            "table_name": "clingen",
+                            "identifier": "human_gene_id",
+                            "prefix": "clin"
+                        },
+                        {
+                            "table_name": "gnomad_plof",
+                            "identifier": "human_gene_id",
+                            "prefix": "gnp"
+                        },
+                        {
+                            "table_name": "hgnc_gene",
+                            "identifier": "human_gene_id",
+                            "prefix": "hgnc"
+                        },
+                        {
+                            "table_name": "human_gene_synonym",
+                            "identifier": "hgnc_acc_id",
+                            "prefix": "hgs"
+                        },
+                        {
+                            "table_name": "idg",
+                            "identifier": "human_gene_id",
+                            "prefix": "idg"
+                        }
+                    ]
+                },
+                "ortholog": {
+                    "identifier": "id",
+                    "prefix": "o",
+                    "identifier_human": "human_gene_id",
+                    "identifier_mouse": "mouse_gene_id",
+                    "datasources": [
+                        {
+                            "table_name": "ortholog",
+                            "identifier": "id",
+                            "prefix": "o"
+                        }
+                    ]
+                }
             }
-          ]
         },
-        "human_gene": {
-          "identifier": "id",
-          "prefix": "hg",
-          "public_identifier": "hgnc_acc_id",
-          "datasources": [
-            {
-              "table_name": "human_gene",
-              "identifier": "id",
-              "prefix": "hg"
+        {
+            "ortholog_mapping": {
+                "ortholog": {
+                    "identifier": "id",
+                    "prefix": "o",
+                    "identifier_human": "human_gene_id",
+                    "identifier_mouse": "mouse_gene_id",
+                    "datasources": [
+                        {
+                            "table_name": "ortholog",
+                            "identifier": "id",
+                            "prefix": "o"
+                        }
+                    ]
+                }
             },
-            {
-              "table_name": "achilles_gene_effect",
-              "identifier": "human_gene_id",
-              "prefix": "age"
-            },
-            {
-              "table_name": "clingen",
-              "identifier": "human_gene_id",
-              "prefix": "clin"
-            },
-            {
-              "table_name": "gnomad_plof",
-              "identifier": "human_gene_id",
-              "prefix": "gnp"
-            },
-            {
-              "table_name": "hgnc_gene",
-              "identifier": "human_gene_id",
-              "prefix": "hgnc"
-            },
-            {
-              "table_name": "human_gene_synonym",
-              "identifier": "hgnc_acc_id",
-              "prefix": "hgs"
-            },
-            {
-              "table_name": "idg",
-              "identifier": "human_gene_id",
-              "prefix": "idg"
-            }
-          ]
-        },
-        "ortholog": {
-          "identifier": "id",
-          "prefix": "o",
-          "identifier_human": "human_gene_id",
-          "identifier_mouse": "mouse_gene_id",
-          "datasources": [
-            {
-              "table_name": "ortholog",
-              "identifier": "id",
-              "prefix": "o"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "ortholog_mapping": {
-        "ortholog": {
-          "identifier": "id",
-          "prefix": "o",
-          "identifier_human": "human_gene_id",
-          "identifier_mouse": "mouse_gene_id",
-          "datasources": [
-            {
-              "table_name": "ortholog",
-              "identifier": "id",
-              "prefix": "o"
-            }
-          ]
-        }
-
-
-
-      },
-        "identifier": "id",
-        "prefix": "o",
-        "public_identifier": "hgnc_acc_id",
-        "datasources": [
-          {
-            "table_name": "human_gene",
             "identifier": "id",
-            "prefix": "hg"
-          },
-          {
-            "table_name": "achilles_gene_effect",
-            "identifier": "human_gene_id",
-            "prefix": "age"
-          },
-          {
-            "table_name": "clingen",
-            "identifier": "human_gene_id",
-            "prefix": "clin"
-          },
-          {
-            "table_name": "gnomad_plof",
-            "identifier": "human_gene_id",
-            "prefix": "gnp"
-          },
-          {
-            "table_name": "hgnc_gene",
-            "identifier": "human_gene_id",
-            "prefix": "hgnc"
-          },
-          {
-            "table_name": "human_gene_synonym",
-            "identifier": "hgnc_acc_id",
-            "prefix": "hgs"
-          },
-          {
-            "table_name": "idg",
-            "identifier": "human_gene_id",
-            "prefix": "idg"
-          }
-        ]
-      },
-      "table_info": [
-          {
-            "alias": "o"
-          },
-          {
-            "name": "ortholog"
-          },
-          {
-            "alias": "mmf"
-          },
-          {
-            "name": "mouse_mapping_filter"
-          },
-          {
-            "alias": "hmf"
-          },
-        ]
-      }
+            "prefix": "o",
+            "public_identifier": "hgnc_acc_id",
+            "datasources": [
+                {
+                    "table_name": "human_gene",
+                    "identifier": "id",
+                    "prefix": "hg"
+                },
+                {
+                    "table_name": "achilles_gene_effect",
+                    "identifier": "human_gene_id",
+                    "prefix": "age"
+                },
+                {
+                    "table_name": "clingen",
+                    "identifier": "human_gene_id",
+                    "prefix": "clin"
+                },
+                {
+                    "table_name": "gnomad_plof",
+                    "identifier": "human_gene_id",
+                    "prefix": "gnp"
+                },
+                {
+                    "table_name": "hgnc_gene",
+                    "identifier": "human_gene_id",
+                    "prefix": "hgnc"
+                },
+                {
+                    "table_name": "human_gene_synonym",
+                    "identifier": "hgnc_acc_id",
+                    "prefix": "hgs"
+                },
+                {
+                    "table_name": "idg",
+                    "identifier": "human_gene_id",
+                    "prefix": "idg"
+                }
+            ]
+        },
+        {
+            "table_info": [
+                {
+                    "alias": "o"
+                },
+                {
+                    "name": "ortholog"
+                },
+                {
+                    "alias": "mmf"
+                },
+                {
+                    "name": "mouse_mapping_filter"
+                },
+                {
+                    "alias": "hmf"
+                }
+            ]
+        }
+    ]
+}
