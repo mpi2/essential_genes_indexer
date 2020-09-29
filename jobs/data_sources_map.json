@@ -1,6 +1,6 @@
 {
     "cores": {
-        "essentialgenes": {
+        "essentialGenes": {
             "mouse_gene": {
                 "identifier": "id",
                 "prefix": "mg",
