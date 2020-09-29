@@ -4,7 +4,7 @@
             "mouse_gene": {
                 "identifier": "id",
                 "prefix": "mg",
-                "public_identifier": "mgi_gene_acc_id",
+                "public_identifier": "mg_mgi_gene_acc_id",
                 "datasources": [
                     {
                         "table_name": "mouse_gene",
@@ -36,7 +36,7 @@
             "human_gene": {
                 "identifier": "id",
                 "prefix": "hg",
-                "public_identifier": "hgnc_acc_id",
+                "public_identifier": "hg_hgnc_acc_id",
                 "datasources": [
                     {
                         "table_name": "human_gene",
