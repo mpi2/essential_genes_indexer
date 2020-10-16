@@ -209,7 +209,7 @@ def get_ortholog_mouse_mapping(spark, df_mouse_mapping):
     df_mouse_mapping.createOrReplaceTempView("mouse_mapping")
 
     q = '''
-    SELECT o.*, mm.* FROM ortholog o 
+    SELECT o.*, mm.* FROM ortholog o
     LEFT OUTER JOIN mouse_mapping mm ON mm.mg_id = o.o_mouse_gene_id
     '''
     return spark.sql(q)
@@ -227,9 +227,11 @@ def get_ortholog_human_mapping(spark, df_human_mapping):
 
 def get_ortholog_mouse_mapping_and_human_mapping(spark):
     q = '''
-    SELECT o.*, mmf.*, hmf.* FROM ortholog o
+    SELECT o.*, mg.mg_mgi_gene_acc_id, mg.mg_symbol, mmf.*, hg.hg_hgnc_acc_id, hg.hg_symbol, hmf.* FROM ortholog o
     LEFT OUTER JOIN mouse_mapping_filter mmf ON mmf.mmf_id = o.o_mouse_gene_id
     LEFT OUTER JOIN human_mapping_filter hmf ON hmf.hmf_id = o.o_human_gene_id
+    LEFT OUTER JOIN mouse_gene           mg  ON mg.mg_id   = o.o_mouse_gene_id
+    LEFT OUTER JOIN human_gene           hg  ON hg.hg_id   = o.o_human_gene_id
     '''
     return spark.sql(q)
 
