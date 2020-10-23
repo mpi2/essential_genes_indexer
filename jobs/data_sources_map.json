@@ -1,38 +1,6 @@
 {
     "cores": {
         "essentialGenes": {
-            "mouse_gene": {
-                "identifier": "id",
-                "prefix": "mg",
-                "public_identifier": "mg_mgi_gene_acc_id",
-                "datasources": [
-                    {
-                        "table_name": "mouse_gene",
-                        "identifier": "id",
-                        "prefix": "mg"
-                    },
-                    {
-                        "table_name": "impc_adult_viability",
-                        "identifier": "mouse_gene_id",
-                        "prefix": "iav"
-                    },
-                    {
-                        "table_name": "impc_embryo_viability",
-                        "identifier": "mouse_gene_id",
-                        "prefix": "iev"
-                    },
-                    {
-                        "table_name": "fusil",
-                        "identifier": "mouse_gene_id",
-                        "prefix": "f"
-                    },
-                    {
-                        "table_name": "mouse_gene_synonym",
-                        "identifier": "mgi_gene_acc_id",
-                        "prefix": "mgs"
-                    }
-                ]
-            },
             "human_gene": {
                 "identifier": "id",
                 "prefix": "hg",
@@ -41,37 +9,81 @@
                     {
                         "table_name": "human_gene",
                         "identifier": "id",
-                        "prefix": "hg"
-                    },
-                    {
-                        "table_name": "achilles_gene_effect",
-                        "identifier": "human_gene_id",
-                        "prefix": "age"
-                    },
-                    {
-                        "table_name": "clingen",
-                        "identifier": "human_gene_id",
-                        "prefix": "clin"
-                    },
-                    {
-                        "table_name": "gnomad_plof",
-                        "identifier": "human_gene_id",
-                        "prefix": "gnp"
+                        "prefix": "hg",
+                        "display_name": ""
                     },
                     {
                         "table_name": "hgnc_gene",
                         "identifier": "human_gene_id",
-                        "prefix": "hgnc"
+                        "prefix": "hgnc",
+                        "display_name": ""
                     },
                     {
                         "table_name": "human_gene_synonym",
                         "identifier": "hgnc_acc_id",
-                        "prefix": "hgs"
+                        "prefix": "hgs",
+                        "display_name": ""
+                    },
+                    {
+                        "table_name": "achilles_gene_effect",
+                        "identifier": "human_gene_id",
+                        "prefix": "age",
+                        "display_name": "Human cell essentiality scores (Achilles gene effect)"
+                    },
+                    {
+                        "table_name": "gnomad_plof",
+                        "identifier": "human_gene_id",
+                        "prefix": "gnp",
+                        "display_name": "Constraint scores (gnomAD)"
+                    },
+                    {
+                        "table_name": "clingen",
+                        "identifier": "human_gene_id",
+                        "prefix": "clin",
+                        "display_name": "Haploinsufficiency classification (ClinGen)"
                     },
                     {
                         "table_name": "idg",
                         "identifier": "human_gene_id",
-                        "prefix": "idg"
+                        "prefix": "idg",
+                        "display_name": "Illuminating Druggable Genome categories (IDG)"
+                    }
+                ]
+            },
+            "mouse_gene": {
+                "identifier": "id",
+                "prefix": "mg",
+                "public_identifier": "mg_mgi_gene_acc_id",
+                "datasources": [
+                    {
+                        "table_name": "mouse_gene",
+                        "identifier": "id",
+                        "prefix": "mg",
+                        "display_name": ""
+                    },
+                    {
+                        "table_name": "mouse_gene_synonym",
+                        "identifier": "mgi_gene_acc_id",
+                        "prefix": "mgs",
+                        "display_name": ""
+                    }
+                    {
+                        "table_name": "impc_adult_viability",
+                        "identifier": "mouse_gene_id",
+                        "prefix": "iav",
+                        "display_name": "IMPC primary / adult viability"
+                    },
+                    {
+                        "table_name": "impc_embryo_viability",
+                        "identifier": "mouse_gene_id",
+                        "prefix": "iev",
+                        "display_name": "IMPC secondary / embryo viability"
+                    },
+                    {
+                        "table_name": "fusil",
+                        "identifier": "mouse_gene_id",
+                        "prefix": "f",
+                        "display_name": "FUSIL bin categories"
                     }
                 ]
             },
