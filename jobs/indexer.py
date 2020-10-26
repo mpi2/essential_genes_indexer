@@ -75,29 +75,30 @@ def main(args):
 
 def get_batch_data(spark):
     get_ortholog(spark)
-    get_fusil(spark)
     df_mouse = get_mouse(spark)
     get_ortholog_mouse(spark, df_mouse)
     df_human = get_human(spark)
     get_ortholog_human(spark, df_human)
-    df_ortholog_fusil_mouse_and_human = get_ortholog_fusil_mouse_and_human(spark)
+    df_ortholog_mouse_and_human = get_ortholog_mouse_and_human(spark)
 
     df_mouse_mapping = get_mouse_mapping(spark)
     get_ortholog_mouse_mapping(spark, df_mouse_mapping)
     df_human_mapping = get_human_mapping(spark)
     get_ortholog_human_mapping(spark, df_human_mapping)
     df_ortholog_mouse_mapping_and_human_mapping = get_ortholog_mouse_mapping_and_human_mapping(spark)
-    return df_ortholog_fusil_mouse_and_human, df_ortholog_mouse_mapping_and_human_mapping
+    return df_ortholog_mouse_and_human, df_ortholog_mouse_mapping_and_human_mapping
 
 
 def get_ortholog(spark):
     get_table(spark, "ortholog", "o_", "id")
-    return spark.sql("SELECT * FROM ortholog")
-
-
-def get_fusil(spark):
     get_table(spark, "fusil", "f_", "id")
-    return spark.sql("SELECT * FROM fusil")
+
+    q = '''
+    SELECT o.*, f.*
+    FROM ortholog o
+    LEFT OUTER JOIN fusil f ON f.f_ortholog_id = o.o_id
+    '''
+    return spark.sql(q)
 
 
 def get_ortholog_mouse(spark, df_mouse):
@@ -120,7 +121,7 @@ def get_ortholog_human(spark, df_human):
     return spark.sql(q)
 
 
-def get_ortholog_fusil_mouse_and_human(spark):
+def get_ortholog_mouse_and_human(spark):
     q = '''
     SELECT o.*, f.*, m.*, h.* FROM ortholog o
     FULL OUTER JOIN fusil f ON f.f_ortholog_id  = o.o_id
