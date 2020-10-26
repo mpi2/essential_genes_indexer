@@ -91,19 +91,15 @@ def get_batch_data(spark):
 
 def get_ortholog(spark):
     get_table(spark, "ortholog", "o_", "id")
-    get_table(spark, "fusil", "f_", "id")
-
     q = '''
-    SELECT o.*, f.*
+    SELECT o.*
     FROM ortholog o
-    LEFT OUTER JOIN fusil f ON f.f_ortholog_id = o.o_id
     '''
     return spark.sql(q)
 
 
 def get_ortholog_mouse(spark, df_mouse):
     df_mouse.createOrReplaceTempView("mouse")
-
     q = '''
     SELECT o.*, m.* FROM ortholog o 
     LEFT OUTER JOIN mouse m ON m.mg_id = o.o_mouse_gene_id
@@ -113,7 +109,6 @@ def get_ortholog_mouse(spark, df_mouse):
 
 def get_ortholog_human(spark, df_human):
     df_human.createOrReplaceTempView("human")
-
     q = '''
     SELECT o.*, h.* FROM ortholog o 
     LEFT OUTER JOIN human h ON h.hg_id = o.o_human_gene_id
@@ -122,9 +117,10 @@ def get_ortholog_human(spark, df_human):
 
 
 def get_ortholog_mouse_and_human(spark):
+    get_table(spark, 'fusil', 'f_', 'id')
     q = '''
     SELECT o.*, f.*, m.*, h.* FROM ortholog o
-    FULL OUTER JOIN fusil f ON f.f_ortholog_id  = o.o_id
+    FULL OUTER JOIN fusil f ON f.f_ortholog_id = o.o_id
     FULL OUTER JOIN mouse m ON m.mg_id = o.o_mouse_gene_id
     FULL OUTER JOIN human h ON h.hg_id = o.o_human_gene_id
     '''
@@ -132,7 +128,6 @@ def get_ortholog_mouse_and_human(spark):
 
 
 def get_mouse(spark):
-    get_table(spark, "fusil", "f_", "id")
     get_table(spark, 'impc_adult_viability', 'iav_', 'id')
     get_table(spark, 'impc_embryo_viability', 'iev_', 'id')
     get_table(spark, 'mouse_gene', 'mg_', 'id')
