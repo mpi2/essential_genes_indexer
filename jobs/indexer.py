@@ -123,7 +123,7 @@ def get_ortholog_human(spark, df_human):
 def get_ortholog_fusil_mouse_and_human(spark):
     q = '''
     SELECT o.*, f.*, m.*, h.* FROM ortholog o
-    FULL OUTER JOIN fusil f ON f.f_id  = o.o_id
+    FULL OUTER JOIN fusil f ON f.f_ortholog_id  = o.o_id
     FULL OUTER JOIN mouse m ON m.mg_id = o.o_mouse_gene_id
     FULL OUTER JOIN human h ON h.hg_id = o.o_human_gene_id
     '''
