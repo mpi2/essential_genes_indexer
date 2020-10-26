@@ -75,23 +75,29 @@ def main(args):
 
 def get_batch_data(spark):
     get_ortholog(spark)
+    get_fusil(spark)
     df_mouse = get_mouse(spark)
     get_ortholog_mouse(spark, df_mouse)
     df_human = get_human(spark)
     get_ortholog_human(spark, df_human)
-    df_ortholog_mouse_and_human = get_ortholog_mouse_and_human(spark)
+    df_ortholog_fusil_mouse_and_human = get_ortholog_fusil_mouse_and_human(spark)
 
     df_mouse_mapping = get_mouse_mapping(spark)
     get_ortholog_mouse_mapping(spark, df_mouse_mapping)
     df_human_mapping = get_human_mapping(spark)
     get_ortholog_human_mapping(spark, df_human_mapping)
     df_ortholog_mouse_mapping_and_human_mapping = get_ortholog_mouse_mapping_and_human_mapping(spark)
-    return df_ortholog_mouse_and_human, df_ortholog_mouse_mapping_and_human_mapping
+    return df_ortholog_fusil_mouse_and_human, df_ortholog_mouse_mapping_and_human_mapping
 
 
 def get_ortholog(spark):
     get_table(spark, "ortholog", "o_", "id")
     return spark.sql("SELECT * FROM ortholog")
+
+
+def get_fusil(spark):
+    get_table(spark, "fusil", "f_", "id")
+    return spark.sql("SELECT * FROM fusil")
 
 
 def get_ortholog_mouse(spark, df_mouse):
@@ -114,9 +120,10 @@ def get_ortholog_human(spark, df_human):
     return spark.sql(q)
 
 
-def get_ortholog_mouse_and_human(spark):
+def get_ortholog_fusil_mouse_and_human(spark):
     q = '''
-    SELECT o.*, m.*, h.* FROM ortholog o
+    SELECT o.*, f.*, m.*, h.* FROM ortholog o
+    FULL OUTER JOIN fusil f ON f.f_id  = o.o_id
     FULL OUTER JOIN mouse m ON m.mg_id = o.o_mouse_gene_id
     FULL OUTER JOIN human h ON h.hg_id = o.o_human_gene_id
     '''
@@ -132,7 +139,7 @@ def get_mouse(spark):
     get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_', 'mouse_gene_id')
 
     q = '''\
-        SELECT mg.*, f.*,\
+        SELECT mg.*,\
           (SELECT collect_set(mgs.mgs_synonym)\
            FROM mouse_gene_synonym mgs\
            JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_synonym_id = mgs.mgs_id\
@@ -141,8 +148,7 @@ def get_mouse(spark):
           iav.*, iev.*\
         FROM mouse_gene mg\
         LEFT OUTER JOIN impc_adult_viability iav ON iav.iav_mouse_gene_id = mg.mg_id\
-        LEFT OUTER JOIN impc_embryo_viability iev ON iev.iev_mouse_gene_id = mg.mg_id\
-        LEFT OUTER JOIN fusil f ON f.f_mouse_gene_id = mg.mg_id
+        LEFT OUTER JOIN impc_embryo_viability iev ON iev.iev_mouse_gene_id = mg.mg_id
     '''
     return spark.sql(q)
 
