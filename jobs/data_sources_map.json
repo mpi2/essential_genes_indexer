@@ -5,7 +5,7 @@
         "identifier": "id",
         "prefix": "hg",
         "public_identifier": "hg_hgnc_acc_id",
-        "datasources": [
+        "data_sources": [
           {
             "table_name": "human_gene",
             "identifier": "id",
@@ -90,7 +90,7 @@
         "identifier": "id",
         "prefix": "mg",
         "public_identifier": "mg_mgi_gene_acc_id",
-        "datasources": [
+        "data_sources": [
           {
             "table_name": "mouse_gene",
             "identifier": "id",
@@ -142,7 +142,7 @@
         "identifier_human": "human_gene_id",
         "identifier_mouse": "mouse_gene_id",
         "public_identifier": "mouse_gene_id",
-        "datasources": [
+        "data_sources": [
           {
             "table_name": "ortholog",
             "identifier": "id",
@@ -172,7 +172,7 @@
       "identifier": "id",
       "prefix": "o",
       "public_identifier": "hgnc_acc_id",
-      "datasources": [
+      "data_sources": [
         {
           "table_name": "human_gene",
           "identifier": "id",
@@ -214,7 +214,7 @@
         "prefix": "o",
         "identifier_human": "human_gene_id",
         "identifier_mouse": "mouse_gene_id",
-        "datasources": [
+        "data_sources": [
           {
             "table_name": "ortholog",
             "identifier": "id",
