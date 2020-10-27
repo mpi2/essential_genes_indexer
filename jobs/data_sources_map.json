@@ -86,6 +86,7 @@
         "prefix": "o",
         "identifier_human": "human_gene_id",
         "identifier_mouse": "mouse_gene_id",
+        "public_identifier": "mouse_gene_id",
         "datasources": [
           {
             "table_name": "ortholog",
