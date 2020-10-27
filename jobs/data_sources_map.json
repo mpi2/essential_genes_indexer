@@ -10,43 +10,79 @@
             "table_name": "human_gene",
             "identifier": "id",
             "prefix": "hg",
-            "display_name": ""
+            "display_name": "",
+            "display_columns": [
+              "hg_ensembl_gene_acc_id",
+              "hg_hgnc_acc_id",
+              "hg_name",
+              "hg_symbol"
+            ]
           },
           {
             "table_name": "hgnc_gene",
             "identifier": "human_gene_id",
             "prefix": "hgnc",
-            "display_name": ""
+            "display_name": "",
+            "display_columns": [
+              "hgnc_location_sortable",
+              "hgnc_locus_group"
+            ]
           },
           {
             "table_name": "human_gene_synonym",
             "identifier": "hgnc_acc_id",
             "prefix": "hgs",
-            "display_name": ""
+            "display_name": "",
+            "display_columns": [
+              "hgs_synonyms"
+            ]
           },
           {
             "table_name": "achilles_gene_effect",
             "identifier": "human_gene_id",
             "prefix": "age",
-            "display_name": "Human cell essentiality scores (Achilles gene effect)"
+            "display_name": "Human cell essentiality scores (Achilles gene effect)",
+            "display_columns": [
+              "age_mean_gene_effect"
+            ]
           },
           {
             "table_name": "gnomad_plof",
             "identifier": "human_gene_id",
             "prefix": "gnp",
-            "display_name": "Constraint scores (gnomAD)"
+            "display_name": "Constraint scores (gnomAD)",
+            "display_columns": [
+              "gnp_oe_lof",
+              "gnp_oe_lof_lower",
+              "gnp_oe_lof_upper",
+              "gnp_oe_mis",
+              "gnp_oe_mis_lower",
+              "gnp_oe_mis_upper",
+              "gnp_oe_syn",
+              "gnp_oe_syn_lower",
+              "gnp_oe_syn_upper",
+              "gnp_pli"
+            ]
           },
           {
             "table_name": "clingen",
             "identifier": "human_gene_id",
             "prefix": "clin",
-            "display_name": "Haploinsufficiency classification (ClinGen)"
+            "display_name": "Haploinsufficiency classification (ClinGen)",
+            "display_columns": [
+              "clin_haploinsufficiency",
+              "clin_triplosensitivity"
+            ]
           },
           {
             "table_name": "idg",
             "identifier": "human_gene_id",
             "prefix": "idg",
-            "display_name": "Illuminating Druggable Genome categories (IDG)"
+            "display_name": "Illuminating Druggable Genome categories (IDG)",
+            "display_columns": [
+              "idg_family",
+              "idg_tdl"
+            ]
           }
         ]
       },
@@ -59,25 +95,44 @@
             "table_name": "mouse_gene",
             "identifier": "id",
             "prefix": "mg",
-            "display_name": ""
+            "display_name": "",
+            "display_columns": [
+              "mg_ensembl_gene_acc_id",
+              "mg_mgi_chromosome",
+              "mg_mgi_gene_acc_id",
+              "mg_mgi_start",
+              "mg_mgi_stop",
+              "mg_name",
+              "mg_subtype",
+              "mg_symbol",
+              "mg_type"
+            ]
           },
           {
             "table_name": "mouse_gene_synonym",
             "identifier": "mgi_gene_acc_id",
             "prefix": "mgs",
-            "display_name": ""
+            "display_name": "",
+            "display_columns": [
+              "mgs_synonyms"
+            ]
           },
           {
             "table_name": "impc_adult_viability",
             "identifier": "mouse_gene_id",
             "prefix": "iav",
-            "display_name": "IMPC primary / adult viability"
+            "display_name": "IMPC primary / adult viability",
+            "display_columns": [
+              "iav_allele_symbol",
+              "iav_category"
+            ]
           },
           {
             "table_name": "impc_embryo_viability",
             "identifier": "mouse_gene_id",
             "prefix": "iev",
-            "display_name": "IMPC secondary / embryo viability"
+            "display_name": "IMPC secondary / embryo viability",
+            "display_columns": []
           }
         ]
       },
@@ -91,13 +146,24 @@
           {
             "table_name": "ortholog",
             "identifier": "id",
-            "prefix": "o"
+            "prefix": "o",
+            "display_columns": [
+              "o_category",
+              "o_is_max_human_to_mouse",
+              "o_is_max_mouse_to_human",
+              "o_support",
+              "o_support_count"
+            ]
           },
           {
             "table_name": "fusil",
             "identifier": "mouse_gene_id",
             "prefix": "f",
-            "display_name": "FUSIL bin categories"
+            "display_name": "FUSIL bin categories",
+            "display_columns": [
+              "f_bin",
+              "f_bin_code"
+            ]
           }
         ]
       }
