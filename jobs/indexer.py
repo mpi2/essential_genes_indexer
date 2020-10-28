@@ -128,22 +128,22 @@ def get_ortholog_mouse_and_human(spark):
 
 
 def get_mouse(spark):
-    get_table(spark, 'impc_adult_viability', 'iav_', 'id')
+    get_table(spark, 'combined_adult_viability', 'cav_', 'id')
     get_table(spark, 'impc_embryo_viability', 'iev_', 'id')
     get_table(spark, 'mouse_gene', 'mg_', 'id')
     get_table(spark, 'mouse_gene_synonym', 'mgs_', 'id')
     get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_', 'mouse_gene_id')
 
-    q = '''\
-        SELECT mg.*,\
-          (SELECT collect_set(mgs.mgs_synonym)\
-           FROM mouse_gene_synonym mgs\
-           JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_synonym_id = mgs.mgs_id\
-           WHERE mg.mg_id = mgsr.mgsr_mouse_gene_id\
-           ) AS mgs_synonyms,\
-          iav.*, iev.*\
-        FROM mouse_gene mg\
-        LEFT OUTER JOIN impc_adult_viability iav ON iav.iav_mouse_gene_id = mg.mg_id\
+    q = '''
+        SELECT mg.*,
+          (SELECT collect_set(mgs.mgs_synonym)
+           FROM mouse_gene_synonym mgs
+           JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_synonym_id = mgs.mgs_id
+           WHERE mg.mg_id = mgsr.mgsr_mouse_gene_id
+           ) AS mgs_synonyms,
+          cav.*, iev.*
+        FROM mouse_gene mg
+        LEFT OUTER JOIN combined_adult_viability cav ON cav.cav_mouse_gene_id = mg.mg_id
         LEFT OUTER JOIN impc_embryo_viability iev ON iev.iev_mouse_gene_id = mg.mg_id
     '''
     return spark.sql(q)
@@ -159,19 +159,19 @@ def get_human(spark):
     get_table(spark, 'human_gene_synonym_relation', 'hgsr_', 'human_gene_id')
     get_table(spark, 'idg', 'idg_', 'id')
 
-    q = '''\
-        SELECT age.*, clin.*, gnp.*, hgnc.*, hg.*,\
-          (SELECT collect_set(hgs.hgs_synonym)\
-           FROM human_gene_synonym hgs\
-           JOIN human_gene_synonym_relation hgsr ON hgsr.hgsr_human_gene_synonym_id = hgs.hgs_id\
-           WHERE hg.hg_id = hgsr.hgsr_human_gene_id\
-           ) AS hgs_synonyms,\
-        idg.*\
-        FROM human_gene hg\
-        LEFT OUTER JOIN achilles_gene_effect        AS age  ON age. age_human_gene_id  = hg.  hg_id\
-        LEFT OUTER JOIN clingen                     AS clin ON clin.clin_human_gene_id = hg.  hg_id\
-        LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp. gnp_human_gene_id  = hg.  hg_id\
-        LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.hgnc_human_gene_id = hg.  hg_id\
+    q = '''
+        SELECT age.*, clin.*, gnp.*, hgnc.*, hg.*,
+          (SELECT collect_set(hgs.hgs_synonym)
+           FROM human_gene_synonym hgs
+           JOIN human_gene_synonym_relation hgsr ON hgsr.hgsr_human_gene_synonym_id = hgs.hgs_id
+           WHERE hg.hg_id = hgsr.hgsr_human_gene_id
+           ) AS hgs_synonyms,
+        idg.*
+        FROM human_gene hg
+        LEFT OUTER JOIN achilles_gene_effect        AS age  ON age. age_human_gene_id  = hg.  hg_id
+        LEFT OUTER JOIN clingen                     AS clin ON clin.clin_human_gene_id = hg.  hg_id
+        LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp. gnp_human_gene_id  = hg.  hg_id
+        LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.hgnc_human_gene_id = hg.  hg_id
         LEFT OUTER JOIN idg                                 ON idg. idg_id             = hg.  hg_id
 
     '''

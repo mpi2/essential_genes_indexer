@@ -6,9 +6,9 @@ DSMAP = {
                 "public_id": "mgi_id",
                 "data_sources": [
                     {
-                        "impc_adult_viability": {
+                        "combined_adult_viability": {
                             "col_id": "mouse_gene_id",
-                            "prefix": "impc_adu_via",
+                            "prefix": "comb_adu_via",
                             "exclude": ""
                         },
                     },

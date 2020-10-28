@@ -68,10 +68,10 @@
             "display_name": ""
           },
           {
-            "table_name": "impc_adult_viability",
+            "table_name": "combined_adult_viability",
             "identifier": "mouse_gene_id",
-            "prefix": "iav",
-            "display_name": "IMPC primary / adult viability"
+            "prefix": "cav",
+            "display_name": "IMPC primary / adult viability IMPC_VIA_001 and IMPC_VIA_002 combined"
           },
           {
             "table_name": "impc_embryo_viability",
