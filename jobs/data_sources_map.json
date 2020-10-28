@@ -118,13 +118,13 @@
             ]
           },
           {
-            "table_name": "impc_adult_viability",
+            "table_name": "combined_adult_viability",
             "identifier": "mouse_gene_id",
-            "prefix": "iav",
-            "display_name": "IMPC primary / adult viability",
+            "prefix": "cav",
+            "display_name": "IMPC combined primary / adult viability",
             "display_columns": [
-              "iav_allele_symbol",
-              "iav_category"
+              "cav_allele_symbol",
+              "cav_category"
             ]
           },
           {
