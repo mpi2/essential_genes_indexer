@@ -121,7 +121,7 @@
             "table_name": "combined_adult_viability",
             "identifier": "mouse_gene_id",
             "prefix": "cav",
-            "display_name": "IMPC combined primary / adult viability",
+            "display_name": "IMPC primary / adult viability",
             "display_columns": [
               "cav_allele_symbol",
               "cav_category"
