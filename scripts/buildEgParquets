@@ -30,4 +30,4 @@ fi
  --executor-memory=32G \
  --num-executors=17 \
  --executor-cores=5 \
- ~/indexer.py $1 $2 $3 $4
+ ~/bin/indexer.py $1 $2 $3 $4
