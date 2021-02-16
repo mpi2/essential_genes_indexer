@@ -129,7 +129,6 @@ def get_ortholog_mouse_and_human(spark):
 
 def get_mouse(spark):
     get_table(spark, 'combined_adult_viability', 'cav_', 'id')
-    get_table(spark, 'impc_embryo_viability', 'iev_', 'id')
     get_table(spark, 'mouse_gene', 'mg_', 'id')
     get_table(spark, 'mouse_gene_synonym', 'mgs_', 'id')
     get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_', 'mouse_gene_id')
@@ -141,10 +140,9 @@ def get_mouse(spark):
            JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_synonym_id = mgs.mgs_id
            WHERE mg.mg_id = mgsr.mgsr_mouse_gene_id
            ) AS mgs_synonyms,
-          cav.*, iev.*
+          cav.*
         FROM mouse_gene mg
         LEFT OUTER JOIN combined_adult_viability cav ON cav.cav_mouse_gene_id = mg.mg_id
-        LEFT OUTER JOIN impc_embryo_viability iev ON iev.iev_mouse_gene_id = mg.mg_id
     '''
     return spark.sql(q)
 

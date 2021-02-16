@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script builds the batch query parquet files on the hadoop cluster.
+# This script builds the essential genes parquet files on the hadoop cluster.
 #
 # command-line arguments:
 #        args[1] - jdbc connection string
