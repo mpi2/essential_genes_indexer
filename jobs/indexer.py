@@ -134,13 +134,15 @@ def get_mouse(spark):
     get_table(spark, 'mouse_gene_synonym_relation', 'mgsr_', 'mouse_gene_id')
 
     q = '''
-        SELECT mg.*,
+        SELECT DISTINCT mg.*,
           (SELECT collect_set(mgs.mgs_synonym)
            FROM mouse_gene_synonym mgs
            JOIN mouse_gene_synonym_relation mgsr ON mgsr.mgsr_mouse_gene_synonym_id = mgs.mgs_id
            WHERE mg.mg_id = mgsr.mgsr_mouse_gene_id
            ) AS mgs_synonyms,
-          cav.*
+          cav.cav_allele_accession_id,
+          cav.cav_allele_symbol,
+          cav.cav_category
         FROM mouse_gene mg
         LEFT OUTER JOIN combined_adult_viability cav ON cav.cav_mouse_gene_id = mg.mg_id
     '''
