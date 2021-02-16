@@ -142,7 +142,10 @@ def get_mouse(spark):
            ) AS mgs_synonyms,
           cav.cav_allele_accession_id,
           cav.cav_allele_symbol,
-          cav.cav_category
+          (SELECT collect_set(cav2.cav_category)
+           FROM combined_adult_viability cav2
+           WHERE cav2.cav_mouse_gene_id = mg.mg_id
+          ) AS cav_category
         FROM mouse_gene mg
         LEFT OUTER JOIN combined_adult_viability cav ON cav.cav_mouse_gene_id = mg.mg_id
     '''
