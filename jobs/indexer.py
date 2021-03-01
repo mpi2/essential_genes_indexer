@@ -176,7 +176,7 @@ def get_human(spark):
         LEFT OUTER JOIN clingen                     AS clin ON clin.clin_human_gene_id = hg.  hg_id
         LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp. gnp_human_gene_id  = hg.  hg_id
         LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.hgnc_human_gene_id = hg.  hg_id
-        LEFT OUTER JOIN idg                                 ON idg. idg_id             = hg.  hg_id
+        LEFT OUTER JOIN idg                                 ON idg. idg_human_gene_id  = hg.  hg_id
 
     '''
     return spark.sql(q)
