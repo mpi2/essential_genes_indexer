@@ -170,13 +170,14 @@ def get_human(spark):
            JOIN human_gene_synonym_relation hgsr ON hgsr.hgsr_human_gene_synonym_id = hgs.hgs_id
            WHERE hg.hg_id = hgsr.hgsr_human_gene_id
            ) AS hgs_synonyms,
-        idg.*
+        idg.*, pharos.*
         FROM human_gene hg
-        LEFT OUTER JOIN achilles_gene_effect        AS age  ON age. age_human_gene_id  = hg.  hg_id
-        LEFT OUTER JOIN clingen                     AS clin ON clin.clin_human_gene_id = hg.  hg_id
-        LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp. gnp_human_gene_id  = hg.  hg_id
-        LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.hgnc_human_gene_id = hg.  hg_id
-        LEFT OUTER JOIN idg                                 ON idg. idg_human_gene_id  = hg.  hg_id
+        LEFT OUTER JOIN achilles_gene_effect        AS age  ON age.   age_human_gene_id  = hg.  hg_id
+        LEFT OUTER JOIN clingen                     AS clin ON clin.  clin_human_gene_id = hg.  hg_id
+        LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp.   gnp_human_gene_id  = hg.  hg_id
+        LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.  hgnc_human_gene_id = hg.  hg_id
+        LEFT OUTER JOIN idg                                 ON idg.   idg_human_gene_id  = hg.  hg_id
+        LEFT OUTER JOIN pharos                              ON pharos.idg_human_gene_id  = hg.  hg_id
 
     '''
     return spark.sql(q)
