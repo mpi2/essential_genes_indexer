@@ -162,6 +162,7 @@ def get_human(spark):
     get_table(spark, 'human_gene_synonym', 'hgs_', 'id')
     get_table(spark, 'human_gene_synonym_relation', 'hgsr_', 'human_gene_id')
     get_table(spark, 'idg', 'idg_', 'id')
+    get_table(spark, 'pharos', 'pharos_', 'id')
 
     q = '''
         SELECT age.*, clin.*, gnp.*, hgnc.*, hg.*,
@@ -172,12 +173,12 @@ def get_human(spark):
            ) AS hgs_synonyms,
         idg.*, pharos.*
         FROM human_gene hg
-        LEFT OUTER JOIN achilles_gene_effect        AS age  ON age.   age_human_gene_id  = hg.  hg_id
-        LEFT OUTER JOIN clingen                     AS clin ON clin.  clin_human_gene_id = hg.  hg_id
-        LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp.   gnp_human_gene_id  = hg.  hg_id
-        LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.  hgnc_human_gene_id = hg.  hg_id
-        LEFT OUTER JOIN idg                                 ON idg.   idg_human_gene_id  = hg.  hg_id
-        LEFT OUTER JOIN pharos                              ON pharos.idg_human_gene_id  = hg.  hg_id
+        LEFT OUTER JOIN achilles_gene_effect        AS age  ON age.   age_human_gene_id     = hg.  hg_id
+        LEFT OUTER JOIN clingen                     AS clin ON clin.  clin_human_gene_id    = hg.  hg_id
+        LEFT OUTER JOIN gnomad_plof                 AS gnp  ON gnp.   gnp_human_gene_id     = hg.  hg_id
+        LEFT OUTER JOIN hgnc_gene                   AS hgnc ON hgnc.  hgnc_human_gene_id    = hg.  hg_id
+        LEFT OUTER JOIN idg                                 ON idg.   idg_human_gene_id     = hg.  hg_id
+        LEFT OUTER JOIN pharos                              ON pharos.pharos_human_gene_id  = hg.  hg_id
 
     '''
     return spark.sql(q)
@@ -318,6 +319,7 @@ def get_spark_session():
         spark = SparkSession \
             .builder \
             .config("spark.jars", postgres_jdbc_jar) \
+            .config("spark.driver.host", "127.0.0.1") \
             .master("local[*]") \
             .getOrCreate()
     else:
